@@ -1,0 +1,33 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    DATA["Input Data<br/>(Numeric values)"] --> CHOOSE{"Choose Method"}
+
+    CHOOSE -->|"Normal<br/>distribution"| ZSCORE["Z-Score Method"]
+    CHOOSE -->|"Skewed or<br/>unknown dist."| IQR["IQR Method"]
+
+    subgraph ZS["Z-Score"]
+        direction TB
+        Z1["Calculate mean & std"]
+        Z2["z = (x - mean) / std"]
+        Z3["Outlier if |z| > threshold"]
+        Z1 --> Z2 --> Z3
+    end
+
+    subgraph IQ["IQR (Interquartile Range)"]
+        direction TB
+        I1["Calculate Q1 (25%) and Q3 (75%)"]
+        I2["IQR = Q3 - Q1"]
+        I3["Lower = Q1 - k × IQR<br/>Upper = Q3 + k × IQR"]
+        I4["Outlier if x < Lower or x > Upper"]
+        I1 --> I2 --> I3 --> I4
+    end
+
+    ZSCORE --> ZS
+    IQR --> IQ
+
+    ZS --> VIZ["Visualization<br/>(Plotly scatter)"]
+    IQ --> VIZ
+
+    style ZS fill:#bbdefb
+    style IQ fill:#c8e6c9
+    style VIZ fill:#fff9c4

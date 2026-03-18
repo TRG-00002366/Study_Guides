@@ -1,0 +1,38 @@
+// =============================================================================
+// DAX Basic Measures — Reference File
+// For: Tuesday Demo 2 - DAX Basics
+// Copy/paste these into Power BI Desktop > Modeling > New Measure
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// CORE BUSINESS MEASURES (create in _Measures table)
+// -----------------------------------------------------------------------------
+
+// Total Revenue: Simple aggregation of the upstream-calculated net_amount
+// Note: Uses net_amount FROM Snowflake (includes discounts) — NOT extended_price
+Total Revenue = SUM(FCT_ORDER_LINES[net_amount])
+
+// Order Count: Counting distinct orders (not order lines)
+Order Count = DISTINCTCOUNT(FCT_ORDER_LINES[order_key])
+
+// Average Order Value: Safe division using DIVIDE
+// Third argument (0) is the fallback if Order Count is zero
+Avg Order Value = DIVIDE([Total Revenue], [Order Count], 0)
+
+// Customer Count: Unique customers across all orders
+Customer Count = DISTINCTCOUNT(FCT_ORDER_LINES[customer_key])
+
+// Total Quantity: Sum of all line quantities
+Total Quantity = SUM(FCT_ORDER_LINES[quantity])
+
+
+// -----------------------------------------------------------------------------
+// CALCULATED COLUMN EXAMPLE (for contrast — add to FCT_ORDER_LINES table)
+// -----------------------------------------------------------------------------
+
+// Line Total: Row-level calculation (gross amount, no discounts)
+// WARNING: This duplicates/conflicts with net_amount from Snowflake
+Line Total = FCT_ORDER_LINES[quantity] * FCT_ORDER_LINES[extended_price]
+
+// Is High Value: Appropriate use of calculated column (row-level flag)
+Is High Value = IF(FCT_ORDER_LINES[net_amount] > 1000, "Yes", "No")

@@ -1,0 +1,32 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    subgraph Filters["Filter Hierarchy (Cascading)"]
+        direction TB
+        RF["Report Level<br/>Applies to ALL pages"]
+        PF["Page Level<br/>Applies to current page"]
+        VF["Visual Level<br/>Applies to single visual"]
+    end
+
+    RF --> PF
+    PF --> VF
+
+    subgraph Interactions["Visual Interactions"]
+        direction TB
+        CI["Cross-Filter<br/>Selection filters other visuals"]
+        CH["Highlight<br/>Selection highlights values"]
+        NO["None<br/>No interaction"]
+    end
+
+    subgraph Drill["Drill Operations"]
+        direction TB
+        DD["Drill Down<br/>Go deeper in hierarchy"]
+        DU["Drill Up<br/>Return to higher level"]
+        DT["Drill Through<br/>Navigate to detail page"]
+    end
+
+    VF --> Interactions
+    VF --> Drill
+
+    style RF fill:#ffcdd2
+    style PF fill:#fff9c4
+    style VF fill:#c8e6c9

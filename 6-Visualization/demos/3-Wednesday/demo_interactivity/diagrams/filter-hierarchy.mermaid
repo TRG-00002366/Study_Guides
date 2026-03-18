@@ -1,0 +1,30 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    subgraph Hierarchy["Filter Hierarchy (Highest to Lowest Priority)"]
+        direction TB
+        RL["Report-Level Filters<br/>Apply to ALL pages"]
+        PL["Page-Level Filters<br/>Apply to current page"]
+        VL["Visual-Level Filters<br/>Apply to one visual"]
+        SL["Slicers<br/>User-controlled"]
+    end
+
+    RL --> PL
+    PL --> VL
+    SL -.->|"Interactive<br/>user control"| VL
+
+    subgraph Interactions["Cross-Filter Interactions"]
+        direction LR
+        FILTER["Filter<br/>Restricts data"]
+        HIGHLIGHT["Highlight<br/>Dims non-matching"]
+        NONE["None<br/>No interaction"]
+    end
+
+    VL --> Interactions
+
+    style RL fill:#ffcdd2
+    style PL fill:#ffecb3
+    style VL fill:#c8e6c9
+    style SL fill:#bbdefb
+    style FILTER fill:#c8e6c9
+    style HIGHLIGHT fill:#ffecb3
+    style NONE fill:#e0e0e0

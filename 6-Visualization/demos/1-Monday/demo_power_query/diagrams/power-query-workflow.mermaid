@@ -1,0 +1,32 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart LR
+    SRC[("Data Source<br/>(Snowflake)")] --> S1["Step 1:<br/>Source Connection"]
+    S1 --> S2["Step 2:<br/>Navigation"]
+    S2 --> S3["Step 3:<br/>Rename Columns"]
+    S3 --> S4["Step 4:<br/>Change Types"]
+    S4 --> S5["Step 5:<br/>Filter Rows"]
+    S5 --> S6["Step 6:<br/>Add Columns"]
+    S6 --> OUT["Power BI<br/>Data Model"]
+
+    subgraph PQ["Power Query Editor"]
+        S1
+        S2
+        S3
+        S4
+        S5
+        S6
+    end
+
+    subgraph Applied["Applied Steps Pane"]
+        direction TB
+        A1["✓ Source"]
+        A2["✓ Navigation"]
+        A3["✓ Renamed Columns"]
+        A4["✓ Changed Type"]
+        A5["✓ Filtered Rows"]
+        A6["✓ Added Custom"]
+    end
+
+    style PQ fill:#e3f2fd
+    style Applied fill:#fff9c4
+    style OUT fill:#c8e6c9

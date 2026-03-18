@@ -1,0 +1,28 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart LR
+    subgraph Dev["Developer"]
+        PY["Python Script<br/>(app.py)"]
+        SAVE["Save file"]
+    end
+
+    subgraph Server["Streamlit Server"]
+        PARSE["Parse Python<br/>top-to-bottom"]
+        CONVERT["Convert to<br/>React Components"]
+        WS["WebSocket<br/>Connection"]
+    end
+
+    subgraph Browser["Browser"]
+        UI["Auto-generated<br/>HTML/JS/CSS"]
+        INTERACT["User Interaction<br/>(click, type, select)"]
+    end
+
+    PY -->|"streamlit run"| PARSE
+    SAVE -->|"Hot reload"| PARSE
+    PARSE --> CONVERT
+    CONVERT --> WS
+    WS --> UI
+    INTERACT -->|"Triggers<br/>re-run"| PARSE
+
+    style Dev fill:#bbdefb
+    style Server fill:#e8f5e9
+    style Browser fill:#fff9c4

@@ -1,0 +1,42 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+erDiagram
+    DIM_DATE {
+        int date_key PK
+        date full_date
+        int year
+        int quarter
+        int month
+        string month_name
+        int day
+    }
+    DIM_CUSTOMER {
+        int customer_key PK
+        string customer_name
+        string market_segment
+        string nation
+        string region
+    }
+    DIM_PRODUCT {
+        int product_key PK
+        string part_name
+        string manufacturer
+        string brand
+        string type
+        int size
+    }
+    FCT_ORDER_LINES {
+        int order_line_key PK
+        int order_key
+        int date_key FK
+        int customer_key FK
+        int product_key FK
+        int quantity
+        decimal extended_price
+        decimal discount_pct
+        decimal net_amount
+        string order_status
+    }
+
+    DIM_DATE ||--o{ FCT_ORDER_LINES : "date_key"
+    DIM_CUSTOMER ||--o{ FCT_ORDER_LINES : "customer_key"
+    DIM_PRODUCT ||--o{ FCT_ORDER_LINES : "product_key"

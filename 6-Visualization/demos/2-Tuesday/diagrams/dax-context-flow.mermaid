@@ -1,0 +1,32 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    subgraph RC["Row Context"]
+        direction TB
+        CC["Calculated Columns<br/>Iterates row by row"]
+        IX["Iterator Functions<br/>SUMX, AVERAGEX, FILTER"]
+    end
+
+    subgraph FC["Filter Context"]
+        direction TB
+        VS["Visual Selections<br/>(axes, legends)"]
+        SL["Slicers"]
+        FL["Filters Pane"]
+        RLS["Row-Level Security"]
+    end
+
+    subgraph CALC["CALCULATE Function"]
+        direction TB
+        C1["Modifies filter context"]
+        C2["Enables context transition"]
+        C3["Creates row context from filter context"]
+    end
+
+    FC --> |"Active filters"| MS["Measure Evaluation"]
+    RC --> |"Current row"| CC
+    CALC --> |"Overrides"| FC
+
+    MS --> RES["Result"]
+
+    style RC fill:#e1f5fe
+    style FC fill:#fff3e0
+    style CALC fill:#f3e5f5

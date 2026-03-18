@@ -1,0 +1,28 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9', 'secondaryColor': '#f0f0f0', 'tertiaryColor': '#e8f4f8'}}}%%
+flowchart TB
+    subgraph Desktop["Power BI Desktop (Free)"]
+        direction TB
+        RV["Report View<br/>Canvas for visuals"]
+        DV["Data View<br/>Inspect tables"]
+        MV["Model View<br/>Relationships"]
+    end
+
+    subgraph Ribbon["Key Ribbon Actions"]
+        GD["Get Data<br/>Connect to sources"]
+        TD["Transform Data<br/>Power Query Editor"]
+        PUB["Publish<br/>Upload to Service"]
+    end
+
+    subgraph Panes["Right-Side Panes"]
+        VIZ["Visualizations<br/>Chart types"]
+        FLD["Fields<br/>Tables & columns"]
+        FLT["Filters<br/>Slicers & filters"]
+    end
+
+    RV --> VIZ
+    RV --> FLD
+    RV --> FLT
+    
+    GD --> RV
+    TD --> DV
+    PUB --> SVC["Power BI Service<br/>(app.powerbi.com)"]

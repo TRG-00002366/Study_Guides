@@ -1,0 +1,88 @@
+// =============================================================================
+// DAX Row-Level Security (RLS) Patterns — Reference File
+// For: Thursday Demo 3 - Row-Level Security
+// Use these in Power BI Desktop > Modeling > Manage Roles
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// STATIC RLS — Hardcoded filter values
+// Each role has a fixed filter expression
+// -----------------------------------------------------------------------------
+
+// Role: "Automobile Segment"
+// Table: DIM_CUSTOMER
+[market_segment] = "AUTOMOBILE"
+
+// Role: "Building Segment"  
+// Table: DIM_CUSTOMER
+[market_segment] = "BUILDING"
+
+// Role: "Machinery Segment"
+// Table: DIM_CUSTOMER
+[market_segment] = "MACHINERY"
+
+// Role: "Household Segment"
+// Table: DIM_CUSTOMER
+[market_segment] = "HOUSEHOLD"
+
+// Role: "Furniture Segment"
+// Table: DIM_CUSTOMER
+[market_segment] = "FURNITURE"
+
+
+// -----------------------------------------------------------------------------
+// DYNAMIC RLS — User-based lookup (Advanced)
+// Requires a UserTable with user-to-segment mapping
+// -----------------------------------------------------------------------------
+
+// Step 1: Create a UserTable in Power BI (Enter Data or import from source)
+// Columns: email, market_segment
+//
+// Example data:
+// | email                    | market_segment |
+// |--------------------------|----------------|
+// | alice@company.com        | AUTOMOBILE     |
+// | bob@company.com          | BUILDING       |
+// | charlie@company.com      | MACHINERY      |
+// | admin@company.com        | ALL            |
+
+// Step 2: Create relationship
+// UserTable[market_segment] <-> DIM_CUSTOMER[market_segment] (bidirectional)
+
+// Step 3: DAX filter for Dynamic RLS role
+// Role: "Dynamic Segment Filter"
+// Table: UserTable
+[email] = USERPRINCIPALNAME()
+
+// How it works:
+// 1. User logs in → USERPRINCIPALNAME() returns their email
+// 2. UserTable is filtered to their row
+// 3. Bidirectional relationship filters DIM_CUSTOMER
+// 4. DIM_CUSTOMER filters FCT_ORDER_LINES
+// Result: User sees only their assigned segment's data
+
+
+// -----------------------------------------------------------------------------
+// MULTI-VALUE DYNAMIC RLS (User has access to multiple segments)
+// -----------------------------------------------------------------------------
+
+// UserTable with multiple rows per user:
+// | email                    | market_segment |
+// |--------------------------|----------------|
+// | alice@company.com        | AUTOMOBILE     |
+// | alice@company.com        | BUILDING       |
+// | bob@company.com          | MACHINERY      |
+
+// Same DAX filter works — multiple rows match, all segments visible:
+[email] = USERPRINCIPALNAME()
+
+
+// -----------------------------------------------------------------------------
+// ADMIN BYPASS PATTERN
+// -----------------------------------------------------------------------------
+
+// Role: "Admin - Full Access"  
+// Table: DIM_CUSTOMER
+// No filter expression needed — leave blank for full access
+// OR create an explicit bypass:
+[market_segment] = [market_segment]  // Always TRUE — sees everything

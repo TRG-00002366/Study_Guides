@@ -1,0 +1,138 @@
+// =============================================================================
+// DAX Examples for Tuesday Demo
+// Reference file - not executable code
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// BASIC MEASURES
+// -----------------------------------------------------------------------------
+
+// Total Revenue: Simple aggregation
+Total Revenue = SUM(FCT_ORDER_LINES[net_amount])
+
+// Order Count: Counting distinct orders
+Order Count = DISTINCTCOUNT(FCT_ORDER_LINES[order_key])
+
+// Average Order Value: Using DIVIDE for safe division
+Avg Order Value = DIVIDE([Total Revenue], [Order Count], 0)
+
+// Customer Count: Unique customers
+Customer Count = DISTINCTCOUNT(FCT_ORDER_LINES[customer_key])
+
+// Total Quantity: Sum of all quantities
+Total Quantity = SUM(FCT_ORDER_LINES[quantity])
+
+
+// -----------------------------------------------------------------------------
+// CALCULATE PATTERNS
+// -----------------------------------------------------------------------------
+
+// Remove all filters on a dimension
+Total Revenue All Years = 
+CALCULATE(
+    [Total Revenue], 
+    ALL(DIM_DATE)
+)
+
+// Fixed filter value
+Revenue 2023 = 
+CALCULATE(
+    [Total Revenue], 
+    DIM_DATE[year] = 2023
+)
+
+// Multiple filter conditions
+Revenue 2023 Q1 = 
+CALCULATE(
+    [Total Revenue], 
+    DIM_DATE[year] = 2023,
+    DIM_DATE[quarter] = 1
+)
+
+// Filter using a table (more efficient for multiple values)
+Revenue Top Manufacturers = 
+CALCULATE(
+    [Total Revenue],
+    DIM_PRODUCT[manufacturer] IN {"Manufacturer#1", "Manufacturer#2", "Manufacturer#3"}
+)
+
+
+// -----------------------------------------------------------------------------
+// TIME INTELLIGENCE
+// -----------------------------------------------------------------------------
+
+// Year-to-Date
+Revenue YTD = 
+TOTALYTD(
+    [Total Revenue], 
+    DIM_DATE[full_date]
+)
+
+// Prior Year comparison
+Revenue PY = 
+CALCULATE(
+    [Total Revenue], 
+    SAMEPERIODLASTYEAR(DIM_DATE[full_date])
+)
+
+// Year-over-Year Growth
+YoY Growth = 
+DIVIDE(
+    [Total Revenue] - [Revenue PY],
+    [Revenue PY],
+    0
+)
+
+// Rolling 3-Month Average
+Rolling 3M Avg = 
+AVERAGEX(
+    DATESINPERIOD(DIM_DATE[full_date], MAX(DIM_DATE[full_date]), -3, MONTH),
+    [Total Revenue]
+)
+
+
+// -----------------------------------------------------------------------------
+// CALCULATED COLUMNS (use sparingly)
+// -----------------------------------------------------------------------------
+
+// Calculated column example (row context)
+// Add to FCT_ORDER_LINES table
+Line Total = FCT_ORDER_LINES[quantity] * FCT_ORDER_LINES[extended_price]
+
+// Add to DIM_DATE table
+Quarter Label = "Q" & DIM_DATE[quarter] & " " & DIM_DATE[year]
+
+
+// -----------------------------------------------------------------------------
+// DAX STUDIO QUERIES
+// -----------------------------------------------------------------------------
+
+// Basic query - summarize by year
+EVALUATE
+SUMMARIZECOLUMNS(
+    DIM_DATE[year],
+    "Total Revenue", [Total Revenue],
+    "Order Count", [Order Count]
+)
+
+// Top 10 customers query
+EVALUATE
+TOPN(
+    10,
+    SUMMARIZECOLUMNS(
+        DIM_CUSTOMER[customer_name],
+        DIM_CUSTOMER[market_segment],
+        "Total Revenue", [Total Revenue]
+    ),
+    [Total Revenue], DESC
+)
+
+// Query with filter
+EVALUATE
+CALCULATETABLE(
+    SUMMARIZECOLUMNS(
+        DIM_PRODUCT[manufacturer],
+        "Total Revenue", [Total Revenue]
+    ),
+    DIM_DATE[year] = 1995
+)

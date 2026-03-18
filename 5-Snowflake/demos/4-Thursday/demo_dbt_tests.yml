@@ -1,0 +1,161 @@
+version: 2
+
+# =============================================================================
+# DEMO: dbt Tests
+# Day: 4-Thursday
+# Purpose: Add schema tests to validate data quality
+# =============================================================================
+#
+# INSTRUCTOR NOTES:
+# dbt has built-in tests (unique, not_null, accepted_values, relationships)
+# and supports custom tests.
+#
+# KEY BRIDGE: "dbt tests are like Airflow data quality operators or 
+# Spark DataFrame assertions. They run after models and fail the pipeline
+# if data is bad."
+# =============================================================================
+
+# =============================================================================
+# FILE: models/staging/staging.yml
+# Place this alongside your staging models
+# =============================================================================
+
+models:
+  # Tests for the staging events model
+  - name: stg_events
+    description: "Staged events from bronze layer - cleansed and typed"
+    
+    columns:
+      - name: event_id
+        description: "Unique identifier for each event"
+        tests:
+          # Every event_id must be unique
+          - unique
+          # No null values allowed
+          - not_null
+      
+      - name: event_type
+        description: "Type of event - normalized to uppercase"
+        tests:
+          - not_null
+          # Only these values are valid
+          - accepted_values:
+              values: ['CLICK', 'VIEW', 'PURCHASE', 'LOGOUT', 'LOGIN']
+              config:
+                severity: warn  # Warn instead of error for unexpected values
+      
+      - name: user_id
+        description: "User who triggered the event"
+        tests:
+          # user_id can be null (anonymous events) so no not_null test
+          - unique:
+              config:
+                # This test may have duplicates (same user, multiple events)
+                # We're testing it's valid, not necessarily unique
+                where: "event_type = 'LOGIN'"
+      
+      - name: event_timestamp
+        description: "When the event occurred"
+        tests:
+          - not_null
+
+# =============================================================================
+# Tests for mart models
+# =============================================================================
+
+  - name: fct_event_counts
+    description: "Aggregated event counts by date and type"
+    
+    columns:
+      - name: event_date
+        description: "Date of the events"
+        tests:
+          - not_null
+          - unique:
+              # Combination of date+type should be unique
+              config:
+                # This is a composite test workaround
+                where: "1=1"  # Applied per-row
+      
+      - name: event_type
+        description: "Type of event"
+        tests:
+          - not_null
+      
+      - name: event_count
+        description: "Number of events"
+        tests:
+          - not_null
+          # Custom expression test: count should be positive
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+              config:
+                severity: error
+
+# =============================================================================
+# CUSTOM TESTS (Advanced)
+# =============================================================================
+
+# For custom tests, create a file in tests/ directory:
+#
+# tests/assert_event_counts_positive.sql:
+# 
+# -- This test FAILS if any rows are returned
+# SELECT
+#     event_date,
+#     event_type,
+#     event_count
+# FROM {{ ref('fct_event_counts') }}
+# WHERE event_count <= 0
+#
+# dbt tests return FAILING rows. If no rows returned, test passes.
+
+# =============================================================================
+# RUNNING TESTS
+# =============================================================================
+
+# Run all tests:
+# dbt test
+
+# Run tests for a specific model:
+# dbt test --select stg_events
+
+# Run tests for a model and its dependencies:
+# dbt test --select +fct_event_counts
+
+# Run both model and tests in sequence:
+# dbt build --select stg_events
+
+# =============================================================================
+# INSTRUCTOR TALKING POINTS
+# =============================================================================
+
+# 1. "Tests run AFTER the model is built. If tests fail, the pipeline fails.
+#     Like post-execution data quality checks in Airflow."
+
+# 2. "Built-in tests: unique, not_null, accepted_values, relationships.
+#     These cover 80% of data quality needs."
+
+# 3. "severity: warn means log a warning but don't fail the pipeline.
+#     Use for soft constraints that might have exceptions."
+
+# 4. "Custom tests in tests/ directory return rows that FAIL.
+#     Empty result = test passes. Non-empty = test fails."
+
+# 5. "When a test fails, dbt shows you the SQL query to debug.
+#     Run it in Snowflake to see the failing rows."
+
+# 6. "dbt build = dbt run + dbt test in dependency order."
+
+# =============================================================================
+# EXAMPLE TEST OUTPUT
+# =============================================================================
+
+# Successful run:
+# Completed with 0 errors, 0 warnings
+#
+# Failure:
+# FAIL 3 unique_stg_events_event_id
+# Got 3 results, expected 0
+#
+# compiled code at: target/compiled/.../unique_stg_events_event_id.sql

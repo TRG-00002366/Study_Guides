@@ -1,0 +1,22 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    START["What do you want<br/>to communicate?"] --> Q1{"Relative<br/>magnitude?"}
+    Q1 -->|"Yes"| BARS["DATA BARS<br/>In-cell bar charts<br/>Show size differences"]
+    
+    Q1 -->|"No"| Q2{"Gradient from<br/>low to high?"}
+    Q2 -->|"Yes"| SCALE["COLOR SCALES<br/>Background gradient<br/>Heat map effect"]
+    
+    Q2 -->|"No"| Q3{"Status or<br/>category?"}
+    Q3 -->|"Yes"| ICONS["ICONS / RULES<br/>Up/down arrows<br/>Traffic lights"]
+    
+    Q3 -->|"No"| Q4{"Complex business<br/>logic?"}
+    Q4 -->|"Yes"| DAX["DAX-DRIVEN<br/>Custom measure<br/>Full control"]
+    
+    Q4 -->|"No"| NONE["NO FORMATTING<br/>Keep it simple!"]
+
+    style BARS fill:#bbdefb
+    style SCALE fill:#c8e6c9
+    style ICONS fill:#ffecb3
+    style DAX fill:#ffccbc
+    style NONE fill:#e0e0e0
+    style START fill:#fff,stroke:#333,stroke-width:2px

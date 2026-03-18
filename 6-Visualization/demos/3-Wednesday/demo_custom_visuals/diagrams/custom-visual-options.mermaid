@@ -1,0 +1,32 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    APS["AppSource<br/>Marketplace"] --> |"Browse & Install"| PBI["Power BI Desktop"]
+
+    subgraph Categories["Custom Visual Categories"]
+        direction TB
+        
+        subgraph Slicers["Enhanced Slicers"]
+            CS["Chiclet Slicer<br/>(Image tiles)"]
+            HS["Hierarchy Slicer<br/>(Drill-down)"]
+            TS["Timeline Slicer<br/>(Date ranges)"]
+        end
+
+        subgraph Charts["Advanced Charts"]
+            SK["Sankey Diagram<br/>(Flow/journey)"]
+            HM["Heatmap<br/>(Density)"]
+            WC["Word Cloud<br/>(Text analysis)"]
+        end
+
+        subgraph KPIs["KPI Indicators"]
+            CWS["Card with States<br/>(Thresholds)"]
+            BC["Bullet Chart<br/>(vs target)"]
+            PW["Power KPI<br/>(Trend + value)"]
+        end
+    end
+
+    PBI --> Categories
+
+    style APS fill:#bbdefb
+    style Slicers fill:#c8e6c9
+    style Charts fill:#fff9c4
+    style KPIs fill:#ffccbc

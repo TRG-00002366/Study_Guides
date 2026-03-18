@@ -1,0 +1,33 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    subgraph Input["Filter Context (Before CALCULATE)"]
+        direction TB
+        FC1["Slicer: Year = 2023"]
+        FC2["Visual Row: Customer = Acme Corp"]
+        FC3["Page Filter: Region = North"]
+    end
+
+    CALC["CALCULATE(<br/>measure,<br/>filter_modifier)"]
+
+    subgraph Modifiers["Filter Modification Options"]
+        direction TB
+        ALL_F["ALL(DIM_DATE)<br/>→ Remove year filter"]
+        ADD_F["DIM_DATE[year] = 2022<br/>→ Replace year filter"]
+        KEEP["KEEPFILTERS(...)<br/>→ Intersect with existing"]
+        TIME["SAMEPERIODLASTYEAR<br/>→ Shift time window"]
+    end
+
+    subgraph Output["Modified Filter Context"]
+        direction TB
+        OUT1["Measure evaluates<br/>with new context"]
+        OUT2["Result returned<br/>to visual"]
+    end
+
+    Input --> CALC
+    Modifiers --> CALC
+    CALC --> Output
+
+    style Input fill:#ffecb3
+    style Modifiers fill:#e3f2fd
+    style Output fill:#c8e6c9
+    style CALC fill:#bbdefb,stroke:#1565c0,stroke-width:3px

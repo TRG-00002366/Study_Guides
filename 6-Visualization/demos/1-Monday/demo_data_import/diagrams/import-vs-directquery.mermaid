@@ -1,0 +1,26 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart LR
+    subgraph Import["Import Mode"]
+        direction TB
+        I1["Data loaded into<br/>Power BI memory"]
+        I2["Fast queries<br/>(sub-second)"]
+        I3["Scheduled refresh<br/>(up to 48x/day)"]
+        I4["Dataset size limits<br/>(1-100 GB)"]
+    end
+
+    subgraph DQ["DirectQuery Mode"]
+        direction TB
+        D1["No data stored<br/>in Power BI"]
+        D2["Real-time queries<br/>to source"]
+        D3["No refresh needed<br/>(always current)"]
+        D4["Source must handle<br/>query load"]
+    end
+
+    SF[("Snowflake<br/>GOLD Layer")] -->|"Import"| Import
+    SF -->|"DirectQuery"| DQ
+
+    Import --> PBI["Power BI Report"]
+    DQ --> PBI
+
+    style Import fill:#c8e6c9
+    style DQ fill:#ffecb3

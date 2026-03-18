@@ -1,0 +1,27 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart LR
+    subgraph Week5["Week 5: Data Engineering"]
+        direction TB
+        RAW["BRONZE.RAW_ORDERS<br/>(Raw ingestion)"]
+        SILVER["SILVER.ORDERS<br/>(Cleaned & validated)"]
+        GOLD_F["GOLD.FCT_ORDER_LINES<br/>(Fact table)"]
+        GOLD_D["GOLD.DIM_*<br/>(Dimensions)"]
+        RAW --> SILVER
+        SILVER --> GOLD_F
+        SILVER --> GOLD_D
+    end
+
+    subgraph Week6["Week 6: Visualization"]
+        direction TB
+        PBI_IMP["Power BI Import<br/>(VertiPaq Engine)"]
+        DASH["Interactive<br/>Dashboard"]
+        PBI_IMP --> DASH
+    end
+
+    GOLD_F -->|"Snowflake<br/>Connector"| PBI_IMP
+    GOLD_D -->|"Snowflake<br/>Connector"| PBI_IMP
+
+    style Week5 fill:#e3f2fd
+    style Week6 fill:#e8f5e9
+    style GOLD_F fill:#c8e6c9,stroke:#2e7d32
+    style GOLD_D fill:#c8e6c9,stroke:#2e7d32

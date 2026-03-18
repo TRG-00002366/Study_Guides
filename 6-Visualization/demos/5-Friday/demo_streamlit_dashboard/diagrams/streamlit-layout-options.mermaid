@@ -1,0 +1,36 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    subgraph Page["Streamlit Page Layout"]
+        direction TB
+        
+        subgraph Sidebar["st.sidebar"]
+            NAV["Navigation<br/>(radio, selectbox)"]
+            FILT["Filters<br/>(slider, multiselect)"]
+        end
+
+        subgraph Main["Main Content Area"]
+            direction TB
+            
+            subgraph Cols["st.columns(4)"]
+                C1["KPI 1<br/>st.metric"]
+                C2["KPI 2<br/>st.metric"]
+                C3["KPI 3<br/>st.metric"]
+                C4["KPI 4<br/>st.metric"]
+            end
+
+            subgraph Tabs["st.tabs"]
+                T1["Tab 1:<br/>Charts"]
+                T2["Tab 2:<br/>Data Table"]
+                T3["Tab 3:<br/>Details"]
+            end
+
+            subgraph Expand["st.expander"]
+                EX["Collapsible<br/>Advanced Options"]
+            end
+        end
+    end
+
+    style Sidebar fill:#bbdefb
+    style Cols fill:#c8e6c9
+    style Tabs fill:#fff9c4
+    style Expand fill:#e0e0e0

@@ -1,0 +1,34 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    subgraph Cloud["Cloud Data Sources (No Gateway)"]
+        SF[("Snowflake")]
+        AZ[("Azure SQL")]
+        BQ[("BigQuery")]
+    end
+
+    subgraph OnPrem["On-Premises Sources (Gateway Required)"]
+        SQL[("SQL Server")]
+        ORACLE[("Oracle")]
+        FILES[("File Share")]
+    end
+
+    GW["Data Gateway<br/>(On-premises agent)"]
+    OnPrem --> GW
+
+    subgraph PBI_Service["Power BI Service"]
+        DS["Dataset"]
+        SCHED["Scheduled Refresh<br/>Pro: 8x/day | Premium: 48x/day"]
+        HIST["Refresh History<br/>Duration, Status, Errors"]
+    end
+
+    Cloud -->|"Direct connection"| DS
+    GW -->|"Encrypted tunnel"| DS
+    DS --> SCHED
+    SCHED --> HIST
+
+    HIST -->|"Failure"| NOTIFY["Email Notification"]
+
+    style Cloud fill:#c8e6c9
+    style OnPrem fill:#ffecb3
+    style GW fill:#ffccbc
+    style PBI_Service fill:#e3f2fd

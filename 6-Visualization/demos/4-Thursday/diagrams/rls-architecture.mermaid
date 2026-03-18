@@ -1,0 +1,38 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    subgraph Auth["User Authentication"]
+        U1["User A<br/>market_segment: AUTOMOBILE"]
+        U2["User B<br/>market_segment: MACHINERY"]
+        U3["User C<br/>market_segment: BUILDING"]
+    end
+
+    subgraph RLS["Row-Level Security Layer"]
+        R1["Role: AUTOMOBILE<br/>Filter: [market_segment] = 'AUTOMOBILE'"]
+        R2["Role: MACHINERY<br/>Filter: [market_segment] = 'MACHINERY'"]
+        R3["Role: BUILDING<br/>Filter: [market_segment] = 'BUILDING'"]
+    end
+
+    subgraph Data["Same Dataset"]
+        ALL[("All Data<br/>~6M rows")]
+    end
+
+    subgraph Views["User Views"]
+        V1["User A sees<br/>Only AUTOMOBILE data"]
+        V2["User B sees<br/>Only MACHINERY data"]
+        V3["User C sees<br/>Only BUILDING data"]
+    end
+
+    U1 --> R1
+    U2 --> R2
+    U3 --> R3
+    
+    R1 --> ALL
+    R2 --> ALL
+    R3 --> ALL
+    
+    ALL --> V1
+    ALL --> V2
+    ALL --> V3
+
+    style RLS fill:#ffecb3
+    style Data fill:#e8f5e9

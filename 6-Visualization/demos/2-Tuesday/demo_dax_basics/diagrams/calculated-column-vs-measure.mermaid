@@ -1,0 +1,30 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    subgraph CC["Calculated Column"]
+        direction TB
+        CC1["Runs at REFRESH time"]
+        CC2["Stored per-row in memory"]
+        CC3["Fixed — ignores slicers"]
+        CC4["Uses ROW context"]
+        CC5["Example:<br/>Line Total = quantity × price"]
+    end
+
+    subgraph M["Measure"]
+        direction TB
+        M1["Runs at QUERY time"]
+        M2["NOT stored — computed on demand"]
+        M3["Dynamic — reacts to filters"]
+        M4["Uses FILTER context"]
+        M5["Example:<br/>Total Revenue = SUM(net_amount)"]
+    end
+
+    DATA[("Power BI<br/>Data Model")] --> CC
+    DATA --> M
+
+    CC --> RESULT1["Same value<br/>regardless of slicer"]
+    M --> RESULT2["Different value<br/>per filter selection"]
+
+    style CC fill:#ffcdd2
+    style M fill:#c8e6c9
+    style RESULT1 fill:#ffcdd2
+    style RESULT2 fill:#c8e6c9

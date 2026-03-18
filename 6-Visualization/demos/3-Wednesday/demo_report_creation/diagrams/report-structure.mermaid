@@ -1,0 +1,37 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    subgraph Report["Power BI Report Structure"]
+        direction TB
+        subgraph Page1["Page 1: Executive Overview"]
+            direction TB
+            TITLE["Title Bar + KPI Cards"]
+            MAIN["Main Visual<br/>(Bar/Line Chart)"]
+            SIDE["Secondary Visuals<br/>(Pie, Gauge)"]
+            TABLE["Detail Table/Matrix"]
+        end
+        
+        subgraph Page2["Page 2: Product Analysis"]
+            direction TB
+            P2A["Product-specific visuals"]
+        end
+        
+        subgraph Page3["Page 3: Customer Details"]
+            direction TB
+            P3A["Drill-through target"]
+        end
+    end
+
+    subgraph Panes["Configuration Panes"]
+        VIZ["Visualizations<br/>Chart type selection"]
+        FIELDS["Fields<br/>Drag columns here"]
+        FILTERS["Filters<br/>Page/Report/Visual"]
+    end
+
+    Page1 -->|"Drill-through"| Page3
+    VIZ --> Page1
+
+    style Page1 fill:#e3f2fd
+    style Page2 fill:#e8f5e9
+    style Page3 fill:#fff9c4
+    style TITLE fill:#bbdefb
+    style MAIN fill:#bbdefb

@@ -1,0 +1,30 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart LR
+    subgraph App["Streamlit App"]
+        SECRETS["secrets.toml<br/>(credentials)"]
+        CACHE_R["@st.cache_resource<br/>(connection cache)"]
+        CACHE_D["@st.cache_data<br/>(query cache, TTL=600s)"]
+        CODE["app_snowflake.py"]
+    end
+
+    subgraph SF["Snowflake (GOLD Layer)"]
+        DIM["DIM_DATE<br/>DIM_CUSTOMER<br/>DIM_PRODUCT"]
+        FCT["FCT_ORDER_LINES"]
+    end
+
+    SECRETS -->|"Provides<br/>credentials"| CACHE_R
+    CACHE_R -->|"Reuses<br/>connection"| CONN["snowflake.connector"]
+    CONN -->|"SQL Query"| SF
+    SF -->|"Result<br/>DataFrame"| CACHE_D
+    CACHE_D -->|"Cached<br/>data"| CODE
+
+    subgraph Browser["User's Browser"]
+        UI["Dashboard<br/>(Auto-generated)"]
+    end
+
+    CODE --> UI
+
+    style App fill:#e3f2fd
+    style SF fill:#e8f5e9
+    style Browser fill:#fff9c4
+    style CACHE_D fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px

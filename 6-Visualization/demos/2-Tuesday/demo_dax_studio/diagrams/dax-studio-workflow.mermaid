@@ -1,0 +1,29 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart LR
+    PBI["Power BI Desktop<br/>(Running with model)"] -->|"Local connection<br/>(reads memory)"| DS["DAX Studio"]
+    
+    subgraph DS_Features["DAX Studio Capabilities"]
+        direction TB
+        Q["Write & Run<br/>DAX Queries"]
+        E["Explore Tables<br/>& Columns"]
+        P["Performance<br/>Monitoring"]
+        D["Debug Measure<br/>Logic"]
+    end
+
+    DS --> DS_Features
+
+    subgraph Use_Cases["When to Use"]
+        direction TB
+        U1["'What does this<br/>table look like?'"]
+        U2["'Does my CALCULATE<br/>return correct results?'"]
+        U3["'Which query is<br/>slow and why?'"]
+    end
+
+    Q --> U1
+    D --> U2
+    P --> U3
+
+    style PBI fill:#bbdefb
+    style DS fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+    style DS_Features fill:#e8f5e9
+    style Use_Cases fill:#fff9c4

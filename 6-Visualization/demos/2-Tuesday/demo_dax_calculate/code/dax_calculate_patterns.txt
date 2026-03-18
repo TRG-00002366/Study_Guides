@@ -1,0 +1,114 @@
+// =============================================================================
+// DAX CALCULATE Patterns — Reference File
+// For: Tuesday Demo 3 - The CALCULATE Function
+// Copy/paste these into Power BI Desktop > Modeling > New Measure
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// ALL() — Remove Filters
+// -----------------------------------------------------------------------------
+
+// Show total revenue regardless of year slicer selection
+Total Revenue All Years = 
+CALCULATE(
+    [Total Revenue], 
+    ALL(DIM_DATE)
+)
+
+// Show total revenue regardless of ALL filters (grand total)
+Grand Total Revenue = 
+CALCULATE(
+    [Total Revenue], 
+    ALL(DIM_DATE),
+    ALL(DIM_CUSTOMER),
+    ALL(DIM_PRODUCT)
+)
+
+
+// -----------------------------------------------------------------------------
+// FIXED FILTER VALUES
+// -----------------------------------------------------------------------------
+
+// Revenue for a specific year
+Revenue 2023 = 
+CALCULATE(
+    [Total Revenue], 
+    DIM_DATE[year] = 2023
+)
+
+// Revenue for a specific year AND quarter
+Revenue 2023 Q1 = 
+CALCULATE(
+    [Total Revenue], 
+    DIM_DATE[year] = 2023,
+    DIM_DATE[quarter] = 1
+)
+
+// Revenue for specific manufacturers
+Revenue Top Manufacturers = 
+CALCULATE(
+    [Total Revenue],
+    DIM_PRODUCT[manufacturer] IN {"Manufacturer#1", "Manufacturer#2", "Manufacturer#3"}
+)
+
+// Revenue for a specific market segment
+Manufacturer1 Revenue = 
+CALCULATE(
+    [Total Revenue], 
+    DIM_PRODUCT[manufacturer] = "Manufacturer#1"
+)
+
+
+// -----------------------------------------------------------------------------
+// TIME INTELLIGENCE (requires DIM_DATE marked as Date Table)
+// -----------------------------------------------------------------------------
+
+// Year-to-Date
+Revenue YTD = 
+TOTALYTD(
+    [Total Revenue], 
+    DIM_DATE[full_date]
+)
+
+// Prior Year comparison
+Revenue PY = 
+CALCULATE(
+    [Total Revenue], 
+    SAMEPERIODLASTYEAR(DIM_DATE[full_date])
+)
+
+// Year-over-Year Growth percentage
+YoY Growth = 
+DIVIDE(
+    [Total Revenue] - [Revenue PY],
+    [Revenue PY],
+    0
+)
+
+// Rolling 3-Month Average
+Rolling 3M Avg = 
+AVERAGEX(
+    DATESINPERIOD(DIM_DATE[full_date], MAX(DIM_DATE[full_date]), -3, MONTH),
+    [Total Revenue]
+)
+
+
+// -----------------------------------------------------------------------------
+// PERCENTAGE PATTERNS
+// -----------------------------------------------------------------------------
+
+// Revenue as % of Grand Total
+Revenue Pct of Total = 
+DIVIDE(
+    [Total Revenue],
+    CALCULATE([Total Revenue], ALL(FCT_ORDER_LINES)),
+    0
+)
+
+// Revenue as % of Year Total (useful in matrix with year on rows)
+Revenue Pct of Year = 
+DIVIDE(
+    [Total Revenue],
+    CALCULATE([Total Revenue], ALL(DIM_CUSTOMER), ALL(DIM_PRODUCT)),
+    0
+)

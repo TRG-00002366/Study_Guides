@@ -1,0 +1,25 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    subgraph Report["REPORT"]
+        direction TB
+        R1["Multi-page"]
+        R2["Full interactivity<br/>(slicers, cross-filter, drill)"]
+        R3["Created in Desktop"]
+        R4["Detailed analysis"]
+        R5["One data source"]
+    end
+
+    subgraph Dashboard["DASHBOARD"]
+        direction TB
+        D1["Single page only"]
+        D2["Click-to-navigate<br/>(tiles link to reports)"]
+        D3["Created in Service<br/>(pin from reports)"]
+        D4["High-level summary"]
+        D5["Multiple report sources"]
+    end
+
+    RPT_SRC["Report A"] -->|"Pin visuals"| Dashboard
+    RPT_SRC2["Report B"] -->|"Pin visuals"| Dashboard
+
+    style Report fill:#bbdefb
+    style Dashboard fill:#c8e6c9

@@ -1,0 +1,28 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart LR
+    subgraph Desktop["Power BI Desktop"]
+        CREATE["Define RLS Roles<br/>Modeling → Manage Roles"]
+        TEST["Test with 'View As'<br/>Verify filtering works"]
+    end
+
+    subgraph Service["Power BI Service"]
+        ASSIGN["Assign Users to Roles<br/>Dataset → Security"]
+        ENFORCE["Engine enforces filter<br/>at query time"]
+    end
+
+    subgraph Users["User Experience"]
+        direction TB
+        U1["Manager A<br/>Sees: AUTOMOBILE only"]
+        U2["Manager B<br/>Sees: BUILDING only"]
+        U3["Admin<br/>Sees: ALL data"]
+    end
+
+    CREATE --> TEST
+    TEST -->|"Publish"| ASSIGN
+    ASSIGN --> ENFORCE
+    ENFORCE --> Users
+
+    style Desktop fill:#bbdefb
+    style Service fill:#e8f5e9
+    style Users fill:#fff9c4
+    style ENFORCE fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px

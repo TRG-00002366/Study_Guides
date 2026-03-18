@@ -1,0 +1,95 @@
+// =============================================================================
+// DAX Studio Queries — Reference File
+// For: Tuesday Demo 4 - DAX Studio Introduction
+// Run these in DAX Studio connected to your Power BI model
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// BASIC DATA EXPLORATION
+// -----------------------------------------------------------------------------
+
+// View a dimension table (safe — small table)
+EVALUATE DIM_CUSTOMER
+
+// View date dimension
+EVALUATE DIM_DATE
+
+// View product dimension
+EVALUATE DIM_PRODUCT
+
+// ⚠️ DO NOT RUN: EVALUATE FCT_ORDER_LINES (too large — 6M rows!)
+
+
+// -----------------------------------------------------------------------------
+// AGGREGATED QUERIES (Safe for large tables)
+// -----------------------------------------------------------------------------
+
+// Revenue by year
+EVALUATE
+SUMMARIZECOLUMNS(
+    DIM_DATE[year],
+    "Total Revenue", SUM(FCT_ORDER_LINES[net_amount]),
+    "Order Count", DISTINCTCOUNT(FCT_ORDER_LINES[order_key])
+)
+
+// Top 10 customers by revenue
+EVALUATE
+TOPN(
+    10,
+    SUMMARIZECOLUMNS(
+        DIM_CUSTOMER[customer_name],
+        DIM_CUSTOMER[market_segment],
+        "Total Revenue", SUM(FCT_ORDER_LINES[net_amount])
+    ),
+    [Total Revenue], DESC
+)
+
+// Revenue by manufacturer
+EVALUATE
+SUMMARIZECOLUMNS(
+    DIM_PRODUCT[manufacturer],
+    "Total Revenue", SUM(FCT_ORDER_LINES[net_amount]),
+    "Avg Order Value", DIVIDE(
+        SUM(FCT_ORDER_LINES[net_amount]),
+        DISTINCTCOUNT(FCT_ORDER_LINES[order_key]),
+        0
+    )
+)
+
+
+// -----------------------------------------------------------------------------
+// FILTERED QUERIES
+// -----------------------------------------------------------------------------
+
+// Revenue by manufacturer for year 1995 only
+EVALUATE
+CALCULATETABLE(
+    SUMMARIZECOLUMNS(
+        DIM_PRODUCT[manufacturer],
+        "Total Revenue", SUM(FCT_ORDER_LINES[net_amount])
+    ),
+    DIM_DATE[year] = 1995
+)
+
+// Revenue by market segment for top 3 manufacturers
+EVALUATE
+CALCULATETABLE(
+    SUMMARIZECOLUMNS(
+        DIM_CUSTOMER[market_segment],
+        "Total Revenue", SUM(FCT_ORDER_LINES[net_amount])
+    ),
+    DIM_PRODUCT[manufacturer] IN {"Manufacturer#1", "Manufacturer#2", "Manufacturer#3"}
+)
+
+
+// -----------------------------------------------------------------------------
+// TESTING MEASURE LOGIC (before adding to Power BI)
+// -----------------------------------------------------------------------------
+
+// Test ALL() behavior: compare filtered vs unfiltered totals
+EVALUATE
+SUMMARIZECOLUMNS(
+    DIM_DATE[year],
+    "Filtered Revenue", SUM(FCT_ORDER_LINES[net_amount]),
+    "All Years Revenue", CALCULATE(SUM(FCT_ORDER_LINES[net_amount]), ALL(DIM_DATE))
+)

@@ -1,0 +1,24 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    subgraph Page["Report Page Layout"]
+        direction TB
+        subgraph Header["Header Row"]
+            KPI1["Card: Revenue"]
+            KPI2["Card: Orders"]
+            KPI3["Card: Customers"]
+            SL["Slicers"]
+        end
+
+        subgraph Main["Main Content"]
+            MC["Main Chart<br/>(largest visual)"]
+            SC["Secondary<br/>Visuals"]
+        end
+
+        subgraph Footer["Detail Section"]
+            TBL["Table / Matrix<br/>Detailed Data"]
+        end
+    end
+
+    style Header fill:#e3f2fd
+    style Main fill:#fff
+    style Footer fill:#f5f5f5

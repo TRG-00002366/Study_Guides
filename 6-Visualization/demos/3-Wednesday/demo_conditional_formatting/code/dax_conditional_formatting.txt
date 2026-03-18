@@ -1,0 +1,66 @@
+// =============================================================================
+// DAX Conditional Formatting Measures — Reference File
+// For: Wednesday Demo 4 - Conditional Formatting
+// Copy/paste these into Power BI Desktop > Modeling > New Measure
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// COLOR MEASURES (return hex color codes)
+// -----------------------------------------------------------------------------
+
+// Revenue-based background color
+// Green tiers: high = dark green, medium = light green, low = yellow
+Revenue Color = 
+IF([Total Revenue] > 10000000, "#2E7D32",
+IF([Total Revenue] > 5000000, "#66BB6A",
+"#FFEB3B"))
+
+// Growth-based color (for YoY Growth measure)
+// Green = positive, Red = negative, Gray = zero
+Growth Color = 
+IF([YoY Growth] > 0.1, "#2E7D32",
+IF([YoY Growth] > 0, "#66BB6A",
+IF([YoY Growth] = 0, "#9E9E9E",
+"#C62828")))
+
+// Font color for contrast (pair with background color)
+Revenue Font Color = 
+IF([Total Revenue] > 5000000, "#FFFFFF", "#000000")
+
+
+// -----------------------------------------------------------------------------
+// KPI STATUS MEASURES (return text labels for icon rules)
+// -----------------------------------------------------------------------------
+
+// Performance status based on threshold
+Revenue Status = 
+SWITCH(
+    TRUE(),
+    [Total Revenue] > 10000000, "Exceeds",
+    [Total Revenue] > 5000000, "Meets",
+    [Total Revenue] > 1000000, "Below",
+    "Critical"
+)
+
+// Order volume indicator
+Order Volume Status = 
+IF([Order Count] > 1000, "High",
+IF([Order Count] > 500, "Medium",
+"Low"))
+
+
+// -----------------------------------------------------------------------------
+// USAGE INSTRUCTIONS
+// -----------------------------------------------------------------------------
+//
+// To apply a color measure:
+// 1. Select the visual column you want to format
+// 2. Format > Cell elements > Background color (or Font color)
+// 3. Click "fx" button
+// 4. Select "Field value"
+// 5. Choose the color measure (e.g., [Revenue Color])
+//
+// To apply a status measure with icons:
+// 1. Format > Cell elements > Icons
+// 2. Use "Rules" based on the status measure values
+// 3. Map: "Exceeds" = green check, "Meets" = yellow circle, etc.

@@ -1,0 +1,24 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart LR
+    subgraph Desktop["Power BI Desktop"]
+        PQ["Power Query<br/>Transform"]
+        MOD["Data Model<br/>Relationships"]
+        DAX["DAX Measures"]
+        RPT["Report Pages"]
+    end
+
+    subgraph Service["Power BI Service"]
+        DS[("Dataset")]
+        REP["Published<br/>Report"]
+        DASH["Dashboard<br/>(Pinned Tiles)"]
+        WS["Workspace"]
+    end
+
+    Desktop --> |"Publish"| Service
+    RPT --> REP
+    REP --> |"Pin visuals"| DASH
+    
+    DS --> |"Scheduled<br/>Refresh"| SNF[("Snowflake<br/>GOLD Zone")]
+    
+    style Desktop fill:#e3f2fd
+    style Service fill:#fff3e0

@@ -1,0 +1,18 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart LR
+    PBID["Power BI Desktop<br/>(.pbix file)"] -->|"Publish"| WS["Workspace<br/>(Power BI Service)"]
+    
+    subgraph Service["Power BI Service (app.powerbi.com)"]
+        WS --> RPT["Report<br/>(Interactive, multi-page)"]
+        WS --> DS["Dataset<br/>(Data model + refresh)"]
+        RPT -->|"Pin visuals"| DASH["Dashboard<br/>(Single page, pinned tiles)"]
+    end
+
+    DASH --> ALERT["Data Alerts<br/>(Email/Teams notification)"]
+    DASH --> SHARE["Share<br/>(Users & permissions)"]
+    DS --> REFRESH["Scheduled Refresh<br/>(Keep data current)"]
+
+    style PBID fill:#bbdefb
+    style Service fill:#e8f5e9
+    style DASH fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style ALERT fill:#ffecb3

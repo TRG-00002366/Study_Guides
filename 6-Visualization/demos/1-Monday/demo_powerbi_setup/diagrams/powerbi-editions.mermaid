@@ -1,0 +1,33 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart TB
+    subgraph Desktop["Power BI Desktop (FREE)"]
+        direction TB
+        D1["Build reports & visuals"]
+        D2["Connect to data sources"]
+        D3["Create DAX measures"]
+        D4["Design data models"]
+    end
+
+    subgraph Service["Power BI Service (Pro License)"]
+        direction TB
+        S1["Publish & share reports"]
+        S2["Create dashboards"]
+        S3["Schedule data refresh"]
+        S4["Row-level security"]
+    end
+
+    subgraph Premium["Power BI Premium"]
+        direction TB
+        P1["Large dataset support<br/>(up to 400 GB)"]
+        P2["48 refreshes/day"]
+        P3["AI features"]
+        P4["Paginated reports"]
+    end
+
+    DEV["Developer"] --> Desktop
+    Desktop -->|"Publish"| Service
+    Service -->|"Scale"| Premium
+
+    style Desktop fill:#c8e6c9
+    style Service fill:#bbdefb
+    style Premium fill:#fff9c4

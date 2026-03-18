@@ -1,0 +1,21 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#4a90d9'}}}%%
+flowchart LR
+    subgraph Main["Main Report Page"]
+        BAR["Bar Chart<br/>(Revenue by Segment)"]
+        TABLE["Table<br/>(Customer list)"]
+    end
+
+    subgraph Detail["Drill-Through Page: Customer Details"]
+        direction TB
+        CUST["Customer Info<br/>(Name, Segment, Region)"]
+        ORDERS["Order History<br/>(Table)"]
+        TREND["Revenue Trend<br/>(Line Chart)"]
+        BACK["← Back Button<br/>(Auto-generated)"]
+    end
+
+    TABLE -->|"Right-click →<br/>Drill through"| Detail
+    BACK -->|"Navigate back"| Main
+
+    style Main fill:#e3f2fd
+    style Detail fill:#e8f5e9
+    style BACK fill:#ffecb3

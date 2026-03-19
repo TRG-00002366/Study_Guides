@@ -1,0 +1,38 @@
+graph TB
+    subgraph "Event Sources"
+        P1[Kafka Producers]
+    end
+
+    subgraph "Message Broker"
+        K[Kafka Broker<br/>:9092 internal<br/>:9094 external]
+        KUI[Kafka UI<br/>:8080]
+    end
+
+    subgraph "Processing Layer"
+        SM[Spark Master<br/>:7077 submit<br/>:8081 UI]
+        SW[Spark Worker]
+    end
+
+    subgraph "Orchestration Layer"
+        AF[Airflow<br/>:8082]
+        PG[(PostgreSQL<br/>Metadata)]
+    end
+
+    subgraph "Storage"
+        LZ[(Landing Zone<br/>JSON files)]
+        GZ[(Gold Zone<br/>Parquet files)]
+    end
+
+    P1 --> K
+    K --> KUI
+    K --> LZ
+    SM --> SW
+    AF --> PG
+    AF -->|trigger consumer| K
+    AF -->|spark-submit| SM
+    LZ -->|read| SM
+    SM --> GZ
+
+    style AF fill:#47A248,stroke:#333,color:#fff
+    style K fill:#231F20,stroke:#fff,color:#fff
+    style SM fill:#E97627,stroke:#333,color:#fff

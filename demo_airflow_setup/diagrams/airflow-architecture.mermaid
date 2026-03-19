@@ -1,0 +1,38 @@
+graph TB
+    subgraph "Docker Compose Environment"
+        subgraph "PostgreSQL Container"
+            DB[(Metadata Database)]
+        end
+        
+        subgraph "Webserver Container"
+            WS[Airflow Webserver<br/>Port 8080]
+        end
+        
+        subgraph "Scheduler Container"
+            SCH[Airflow Scheduler]
+            EXE[LocalExecutor]
+        end
+        
+        subgraph "Shared Volumes"
+            DAGS[/dags/ folder]
+            LOGS[/logs/ folder]
+        end
+    end
+    
+    subgraph "Developer Machine"
+        BROWSER[Web Browser]
+        CODE[DAG Python Files]
+    end
+    
+    CODE -->|mount| DAGS
+    DAGS -->|parse| SCH
+    DAGS -->|parse| WS
+    
+    SCH -->|read/write state| DB
+    WS -->|read state| DB
+    EXE -->|update state| DB
+    
+    SCH -->|queue tasks| EXE
+    EXE -->|write| LOGS
+    
+    BROWSER -->|HTTP :8080| WS

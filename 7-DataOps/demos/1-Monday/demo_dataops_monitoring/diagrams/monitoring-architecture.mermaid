@@ -1,0 +1,34 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+flowchart TD
+    subgraph Sources ["Data Pipelines"]
+        P1["dbt Pipeline"]
+        P2["Airflow DAGs"]
+        P3["Kafka Streams"]
+    end
+
+    subgraph Collect ["Metrics Collection"]
+        MC["Metrics Collector"]
+        P1 --> MC
+        P2 --> MC
+        P3 --> MC
+    end
+
+    subgraph Observe ["Observability Layer"]
+        MC --> DASH["Monitoring Dashboard"]
+        MC --> ALERT["Alerting Engine"]
+        MC --> LOGS["Centralized Logs"]
+    end
+
+    subgraph Actions ["Response"]
+        ALERT --> SLACK["Slack #data-alerts"]
+        ALERT --> EMAIL["On-Call Email"]
+        ALERT --> PAGE["PagerDuty Incident"]
+    end
+
+    DASH --> KPI["SLA Tracking"]
+    LOGS --> DEBUG["Root Cause Analysis"]
+
+    style Sources fill:#1a1a2e,stroke:#e94560,color:#fff
+    style Collect fill:#0f3460,stroke:#16c79a,color:#fff
+    style Observe fill:#16213e,stroke:#00b4d8,color:#fff
+    style Actions fill:#2d1b69,stroke:#f5a623,color:#fff

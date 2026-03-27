@@ -1,0 +1,30 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+flowchart TD
+    A["Developer Makes Change"] --> B["Push to Feature Branch"]
+    B --> C["Pull Request Opened"]
+
+    subgraph CI ["Continuous Integration"]
+        C --> D["GitHub Actions Triggered"]
+        D --> E["Install dbt + Adapter"]
+        E --> F["dbt deps"]
+        F --> G["dbt compile --target ci"]
+        G --> H["dbt test --target ci"]
+        H --> I{Tests Pass?}
+    end
+
+    I -- Yes --> J["Code Review by Peers"]
+    I -- No --> K["Fix Issues & Re-Push"]
+    K --> C
+
+    J --> L["Merge to Main Branch"]
+
+    subgraph CD ["Continuous Deployment"]
+        L --> M["CD Workflow Triggered"]
+        M --> N["dbt run --target prod"]
+        N --> O["dbt test --target prod"]
+        O --> P["Production Updated"]
+    end
+
+    style CI fill:#1a1a2e,stroke:#e94560,color:#fff
+    style CD fill:#0f3460,stroke:#16c79a,color:#fff
+    style I fill:#e94560,stroke:#fff,color:#fff

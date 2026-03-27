@@ -1,0 +1,24 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+graph TD
+    subgraph DQ ["Six Dimensions of Data Quality"]
+        ACC["Accuracy<br/>Does it match reality?"]
+        COM["Completeness<br/>Is anything missing?"]
+        TIM["Timeliness<br/>Is it current enough?"]
+        CON["Consistency<br/>Do sources agree?"]
+        VAL["Validity<br/>Is the format correct?"]
+        UNI["Uniqueness<br/>Is each entity once?"]
+    end
+
+    ACC --- COM
+    COM --- TIM
+    TIM --- CON
+    CON --- VAL
+    VAL --- UNI
+    UNI --- ACC
+
+    style ACC fill:#e94560,stroke:#fff,color:#fff
+    style COM fill:#1a73e8,stroke:#fff,color:#fff
+    style TIM fill:#f5a623,stroke:#fff,color:#000
+    style CON fill:#16c79a,stroke:#fff,color:#000
+    style VAL fill:#9b59b6,stroke:#fff,color:#fff
+    style UNI fill:#0f3460,stroke:#fff,color:#fff

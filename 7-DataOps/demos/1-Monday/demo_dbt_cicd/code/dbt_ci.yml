@@ -1,0 +1,69 @@
+# .github/workflows/dbt_ci.yml
+# ============================================
+# CI Pipeline: Runs dbt tests on every PR
+# ============================================
+
+name: dbt CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'dbt_project/**'
+      - '.github/workflows/dbt_ci.yml'
+
+env:
+  DBT_PROFILES_DIR: ./dbt_project
+
+jobs:
+  dbt-test:
+    name: Run dbt Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Get the code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Step 3: Install dbt with Snowflake adapter
+      - name: Install dbt
+        run: |
+          pip install --upgrade pip
+          pip install dbt-snowflake==1.7.0
+
+      # Step 4: Configure credentials from GitHub Secrets
+      - name: Configure dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          echo "${{ secrets.DBT_PROFILES_YML }}" > ~/.dbt/profiles.yml
+
+      # Step 5: Install dbt packages (if any)
+      - name: Install dbt packages
+        run: |
+          cd dbt_project
+          dbt deps
+
+      # Step 6: Compile — catches syntax errors early
+      - name: Compile dbt models
+        run: |
+          cd dbt_project
+          dbt compile --target ci
+
+      # Step 7: Run ALL tests against CI environment
+      - name: Run dbt tests
+        run: |
+          cd dbt_project
+          dbt test --target ci
+
+      # Step 8: Generate docs (optional but useful)
+      - name: Generate documentation
+        run: |
+          cd dbt_project
+          dbt docs generate --target ci

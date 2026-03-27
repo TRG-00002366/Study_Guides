@@ -1,0 +1,48 @@
+# profiles.yml — Multi-environment dbt profile
+# ============================================
+# Complete the three targets below.
+# Rules:
+#   1. NEVER hardcode credentials — use env_var()
+#   2. Each target should use a DIFFERENT database
+#   3. Dev schema should be unique per developer
+# ============================================
+
+analytics_project:
+  target: dev
+  outputs:
+
+    # TODO 1: LOCAL DEVELOPMENT target
+    # - type: snowflake
+    # - account, user, password: use env_var()
+    # - role: DATA_ENGINEER
+    # - database: DEV_DB
+    # - warehouse: DEV_WH
+    # - schema: use env_var('USER') + '_dev' for per-developer isolation
+    # - threads: 4
+    dev:
+      type: snowflake
+      # Complete the remaining fields...
+
+    # TODO 2: CI ENVIRONMENT target
+    # - Used by GitHub Actions on pull requests
+    # - account, user, password: use env_var() with CI-specific vars
+    # - role: CI_RUNNER
+    # - database: CI_DB
+    # - warehouse: CI_WH
+    # - schema: ci_test
+    # - threads: 4
+    ci:
+      type: snowflake
+      # Complete the remaining fields...
+
+    # TODO 3: PRODUCTION target
+    # - Serves business users and dashboards
+    # - account, user, password: use env_var() with PROD-specific vars
+    # - role: DATA_ENGINEER_PROD
+    # - database: PROD_DB
+    # - warehouse: PROD_WH
+    # - schema: analytics
+    # - threads: 8 (higher for production workloads)
+    prod:
+      type: snowflake
+      # Complete the remaining fields...

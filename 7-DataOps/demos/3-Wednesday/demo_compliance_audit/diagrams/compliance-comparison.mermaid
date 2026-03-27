@@ -1,0 +1,29 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+graph LR
+    subgraph GDPR ["GDPR (EU)"]
+        G1["Personal Data Protection"]
+        G2["Right to Erasure"]
+        G3["Data Portability"]
+        G4["72-hour Breach Notification"]
+        G5["Penalty: 4% Global Revenue"]
+    end
+
+    subgraph HIPAA ["HIPAA (US Healthcare)"]
+        H1["Protected Health Info"]
+        H2["Minimum Necessary"]
+        H3["Audit Controls Required"]
+        H4["60-day Breach Notification"]
+        H5["Penalty: $1.5M/category/year"]
+    end
+
+    subgraph SOC2 ["SOC 2 (Service Orgs)"]
+        S1["Security Controls"]
+        S2["Availability SLAs"]
+        S3["Processing Integrity"]
+        S4["Annual Audit Required"]
+        S5["Penalty: Loss of Trust"]
+    end
+
+    style GDPR fill:#1a73e8,stroke:#fff,color:#fff
+    style HIPAA fill:#e94560,stroke:#fff,color:#fff
+    style SOC2 fill:#16c79a,stroke:#fff,color:#000

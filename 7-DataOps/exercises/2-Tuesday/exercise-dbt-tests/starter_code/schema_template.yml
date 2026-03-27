@@ -1,0 +1,76 @@
+# models/marts/schema.yml
+# ============================================
+# PARTIAL TEST DEFINITIONS — Complete the TODOs
+# ============================================
+
+version: 2
+
+models:
+  # ---------- Customer Dimension ----------
+  - name: dim_customers
+    description: "Customer dimension table — one row per customer"
+    columns:
+      - name: customer_key
+        description: "Surrogate key for the customer"
+        tests:
+          # TODO: Add 'unique' test
+          # TODO: Add 'not_null' test
+
+      - name: customer_id
+        description: "Natural key from source system"
+        tests:
+          - unique
+          - not_null
+
+      - name: email
+        description: "Customer email address"
+        tests:
+          - unique
+          # TODO: Add 'not_null' test
+
+      - name: customer_status
+        description: "Current customer lifecycle status"
+        tests:
+          - not_null
+          # TODO: Add 'accepted_values' test
+          # Allowed values: active, inactive, churned
+
+  # ---------- Order Fact ----------
+  - name: fct_orders
+    description: "Fact table for orders — one row per order"
+    columns:
+      - name: order_key
+        description: "Surrogate key for the order"
+        # TODO: Add 'unique' and 'not_null' tests
+
+      - name: customer_key
+        description: "Foreign key to dim_customers"
+        # TODO: Add 'not_null' test
+        # TODO: Add 'relationships' test pointing to dim_customers.customer_key
+
+      - name: order_status
+        description: "Current order status"
+        # TODO: Add 'not_null' test
+        # TODO: Add 'accepted_values' test
+        # Allowed values: pending, shipped, delivered, cancelled, returned
+
+      - name: order_total
+        description: "Total order amount in dollars"
+        # TODO: Add 'not_null' test
+
+  # ---------- Line Item Fact ----------
+  - name: fct_line_items
+    description: "Fact table for order line items"
+    columns:
+      - name: line_item_key
+        description: "Surrogate key for the line item"
+        # TODO: Add 'unique' and 'not_null' tests
+
+      - name: order_key
+        description: "Foreign key to fct_orders"
+        # TODO: Add 'not_null' test
+        # TODO: Add 'relationships' test pointing to fct_orders.order_key
+
+      - name: quantity
+        description: "Number of units ordered"
+        # TODO: Add 'not_null' test

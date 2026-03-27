@@ -1,0 +1,141 @@
+-- rbac_setup.sql
+-- ============================================
+-- Complete RBAC implementation in Snowflake
+-- Run with ACCOUNTADMIN or SECURITYADMIN role
+-- ============================================
+
+-- ============================================
+-- STEP 1: Create custom roles
+-- ============================================
+USE ROLE SECURITYADMIN;
+
+-- Functional roles (what you DO)
+CREATE ROLE IF NOT EXISTS DATA_ENGINEER;
+CREATE ROLE IF NOT EXISTS DATA_ANALYST;
+CREATE ROLE IF NOT EXISTS DATA_SCIENTIST;
+CREATE ROLE IF NOT EXISTS BUSINESS_USER;
+
+-- Domain roles (what data you SEE)
+CREATE ROLE IF NOT EXISTS FINANCE_READ;
+CREATE ROLE IF NOT EXISTS CUSTOMER_READ;
+CREATE ROLE IF NOT EXISTS PRODUCT_READ;
+
+
+-- ============================================
+-- STEP 2: Build role hierarchy
+-- "Higher roles inherit from lower roles"
+-- ============================================
+
+-- DATA_ENGINEER can access ALL data domains
+GRANT ROLE FINANCE_READ  TO ROLE DATA_ENGINEER;
+GRANT ROLE CUSTOMER_READ TO ROLE DATA_ENGINEER;
+GRANT ROLE PRODUCT_READ  TO ROLE DATA_ENGINEER;
+
+-- DATA_ANALYST can access customer and product data (NOT finance)
+GRANT ROLE CUSTOMER_READ TO ROLE DATA_ANALYST;
+GRANT ROLE PRODUCT_READ  TO ROLE DATA_ANALYST;
+
+-- DATA_SCIENTIST inherits everything from DATA_ANALYST
+GRANT ROLE DATA_ANALYST TO ROLE DATA_SCIENTIST;
+
+-- SYSADMIN owns all custom roles (for management)
+GRANT ROLE DATA_ENGINEER  TO ROLE SYSADMIN;
+GRANT ROLE DATA_ANALYST   TO ROLE SYSADMIN;
+GRANT ROLE DATA_SCIENTIST TO ROLE SYSADMIN;
+GRANT ROLE BUSINESS_USER  TO ROLE SYSADMIN;
+
+
+-- ============================================
+-- STEP 3: Create warehouses for different workloads
+-- ============================================
+USE ROLE SYSADMIN;
+
+CREATE WAREHOUSE IF NOT EXISTS ANALYST_WH
+    WAREHOUSE_SIZE = 'XSMALL'
+    AUTO_SUSPEND = 60
+    AUTO_RESUME = TRUE
+    COMMENT = 'For analyst and business user queries';
+
+CREATE WAREHOUSE IF NOT EXISTS ENGINEER_WH
+    WAREHOUSE_SIZE = 'SMALL'
+    AUTO_SUSPEND = 300
+    AUTO_RESUME = TRUE
+    COMMENT = 'For data engineering workloads';
+
+-- Grant warehouse usage to appropriate roles
+GRANT USAGE ON WAREHOUSE ANALYST_WH  TO ROLE DATA_ANALYST;
+GRANT USAGE ON WAREHOUSE ANALYST_WH  TO ROLE DATA_SCIENTIST;
+GRANT USAGE ON WAREHOUSE ANALYST_WH  TO ROLE BUSINESS_USER;
+GRANT USAGE ON WAREHOUSE ENGINEER_WH TO ROLE DATA_ENGINEER;
+
+
+-- ============================================
+-- STEP 4: Grant database and schema access
+-- ============================================
+
+-- Create analytics database (if not exists)
+CREATE DATABASE IF NOT EXISTS ANALYTICS_DB;
+CREATE SCHEMA IF NOT EXISTS ANALYTICS_DB.FINANCE;
+CREATE SCHEMA IF NOT EXISTS ANALYTICS_DB.CUSTOMERS;
+CREATE SCHEMA IF NOT EXISTS ANALYTICS_DB.PRODUCTS;
+CREATE SCHEMA IF NOT EXISTS ANALYTICS_DB.STAGING;
+
+-- Grant USAGE on database to all domain roles
+GRANT USAGE ON DATABASE ANALYTICS_DB TO ROLE FINANCE_READ;
+GRANT USAGE ON DATABASE ANALYTICS_DB TO ROLE CUSTOMER_READ;
+GRANT USAGE ON DATABASE ANALYTICS_DB TO ROLE PRODUCT_READ;
+
+-- Grant USAGE on specific schemas
+GRANT USAGE ON SCHEMA ANALYTICS_DB.FINANCE   TO ROLE FINANCE_READ;
+GRANT USAGE ON SCHEMA ANALYTICS_DB.CUSTOMERS TO ROLE CUSTOMER_READ;
+GRANT USAGE ON SCHEMA ANALYTICS_DB.PRODUCTS  TO ROLE PRODUCT_READ;
+
+
+-- ============================================
+-- STEP 5: Grant table-level access
+-- ============================================
+
+-- SELECT on all current tables
+GRANT SELECT ON ALL TABLES IN SCHEMA ANALYTICS_DB.FINANCE   TO ROLE FINANCE_READ;
+GRANT SELECT ON ALL TABLES IN SCHEMA ANALYTICS_DB.CUSTOMERS TO ROLE CUSTOMER_READ;
+GRANT SELECT ON ALL TABLES IN SCHEMA ANALYTICS_DB.PRODUCTS  TO ROLE PRODUCT_READ;
+
+-- SELECT on FUTURE tables (critical — covers tables not yet created)
+GRANT SELECT ON FUTURE TABLES IN SCHEMA ANALYTICS_DB.FINANCE   TO ROLE FINANCE_READ;
+GRANT SELECT ON FUTURE TABLES IN SCHEMA ANALYTICS_DB.CUSTOMERS TO ROLE CUSTOMER_READ;
+GRANT SELECT ON FUTURE TABLES IN SCHEMA ANALYTICS_DB.PRODUCTS  TO ROLE PRODUCT_READ;
+
+
+-- ============================================
+-- STEP 6: Grant write access to engineers
+-- ============================================
+
+-- Engineers can create and modify in STAGING
+GRANT USAGE ON SCHEMA ANALYTICS_DB.STAGING TO ROLE DATA_ENGINEER;
+GRANT CREATE TABLE ON SCHEMA ANALYTICS_DB.STAGING TO ROLE DATA_ENGINEER;
+GRANT INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ANALYTICS_DB.STAGING TO ROLE DATA_ENGINEER;
+GRANT INSERT, UPDATE, DELETE ON FUTURE TABLES IN SCHEMA ANALYTICS_DB.STAGING TO ROLE DATA_ENGINEER;
+
+
+-- ============================================
+-- STEP 7: Create users and assign roles
+-- ============================================
+USE ROLE SECURITYADMIN;
+
+CREATE USER IF NOT EXISTS trainee_alice
+    PASSWORD = 'ChangeMe123!'
+    DEFAULT_ROLE = DATA_ANALYST
+    DEFAULT_WAREHOUSE = ANALYST_WH
+    MUST_CHANGE_PASSWORD = TRUE
+    COMMENT = 'Demo analyst user';
+
+CREATE USER IF NOT EXISTS trainee_bob
+    PASSWORD = 'ChangeMe456!'
+    DEFAULT_ROLE = DATA_ENGINEER
+    DEFAULT_WAREHOUSE = ENGINEER_WH
+    MUST_CHANGE_PASSWORD = TRUE
+    COMMENT = 'Demo engineer user';
+
+-- Assign roles
+GRANT ROLE DATA_ANALYST  TO USER trainee_alice;
+GRANT ROLE DATA_ENGINEER TO USER trainee_bob;

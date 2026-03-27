@@ -1,0 +1,60 @@
+# .github/workflows/dbt_ci.yml
+# ============================================
+# CI Pipeline: Validate dbt models on pull requests
+# ============================================
+# TODO: Complete this workflow by filling in the
+# missing sections marked with TODO.
+# ============================================
+
+name: dbt CI
+
+# TODO 1: Add the trigger configuration
+# This workflow should run on pull requests targeting the 'main' branch
+# and only when files in the 'dbt_project/' directory change.
+on:
+  # TODO: Replace this comment with the correct trigger
+
+env:
+  DBT_PROFILES_DIR: ./dbt_project
+
+jobs:
+  dbt-test:
+    name: Run dbt Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Get the code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Step 3: Install dbt with Snowflake adapter
+      - name: Install dbt
+        run: |
+          pip install --upgrade pip
+          pip install dbt-snowflake==1.7.0
+
+      # Step 4: Configure credentials from GitHub Secrets
+      - name: Configure dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          echo "${{ secrets.DBT_PROFILES_YML }}" > ~/.dbt/profiles.yml
+
+      # TODO 2: Add a step to install dbt packages
+      # Hint: The command is 'dbt deps' and should run from the dbt_project directory
+
+
+      # TODO 3: Add a step to compile dbt models against the CI target
+      # Hint: Use 'dbt compile --target ci'
+      # Why compile? It catches syntax errors before running tests.
+
+
+      # TODO 4: Add a step to run all dbt tests against the CI environment
+      # Hint: Use 'dbt test --target ci'
+      # This is the critical step — if tests fail, the PR gets a red X.
+

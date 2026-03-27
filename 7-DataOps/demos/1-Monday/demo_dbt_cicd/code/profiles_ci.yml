@@ -1,0 +1,45 @@
+# profiles.yml — Multi-environment dbt profile
+# ============================================
+# Three targets: dev (local), ci (automated), prod (production)
+# Note: Credentials use environment variables — NEVER hardcode secrets
+# ============================================
+
+analytics_project:
+  target: dev
+  outputs:
+
+    # LOCAL DEVELOPMENT — each engineer gets their own schema
+    dev:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: DATA_ENGINEER
+      database: DEV_DB
+      warehouse: DEV_WH
+      schema: "{{ env_var('USER') }}_dev"
+      threads: 4
+
+    # CI ENVIRONMENT — used by GitHub Actions on pull requests
+    ci:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_CI_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_CI_PASSWORD') }}"
+      role: CI_RUNNER
+      database: CI_DB
+      warehouse: CI_WH
+      schema: ci_test
+      threads: 4
+
+    # PRODUCTION — serves business users and dashboards
+    prod:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_PROD_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PROD_PASSWORD') }}"
+      role: DATA_ENGINEER_PROD
+      database: PROD_DB
+      warehouse: PROD_WH
+      schema: analytics
+      threads: 8

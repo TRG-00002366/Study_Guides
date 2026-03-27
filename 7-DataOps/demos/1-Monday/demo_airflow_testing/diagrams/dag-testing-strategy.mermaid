@@ -1,0 +1,29 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+flowchart TB
+    subgraph E2E ["End-to-End Tests (Fewest)"]
+        direction TB
+        E1["Full pipeline run with synthetic data"]
+        E2["Cross-system data validation"]
+    end
+
+    subgraph INT ["Integration Tests (Some)"]
+        direction TB
+        I1["DagBag import validation"]
+        I2["DAG structure & dependency checks"]
+        I3["Database connection tests"]
+    end
+
+    subgraph UNIT ["Unit Tests (Most)"]
+        direction TB
+        U1["Python callable functions"]
+        U2["Data transformation logic"]
+        U3["Input validation"]
+        U4["Edge case handling"]
+    end
+
+    E2E ~~~ INT
+    INT ~~~ UNIT
+
+    style E2E fill:#e94560,stroke:#fff,color:#fff
+    style INT fill:#f5a623,stroke:#fff,color:#000
+    style UNIT fill:#16c79a,stroke:#fff,color:#000

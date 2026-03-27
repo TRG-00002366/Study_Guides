@@ -1,0 +1,62 @@
+# .github/workflows/dbt_deploy.yml
+# ============================================
+# CD Pipeline: Deploys dbt to production
+# after merge to main
+# ============================================
+
+name: dbt Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'dbt_project/**'
+
+jobs:
+  deploy:
+    name: Deploy dbt to Production
+    runs-on: ubuntu-latest
+    environment: production  # Requires GitHub environment approval
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dbt
+        run: |
+          pip install --upgrade pip
+          pip install dbt-snowflake==1.7.0
+
+      - name: Configure dbt profile
+        run: |
+          mkdir -p ~/.dbt
+          echo "${{ secrets.DBT_PROD_PROFILES_YML }}" > ~/.dbt/profiles.yml
+
+      - name: Install dbt packages
+        run: |
+          cd dbt_project
+          dbt deps
+
+      # Run models in production
+      - name: Run dbt in production
+        run: |
+          cd dbt_project
+          dbt run --target prod
+
+      # Validate production data after deployment
+      - name: Run dbt tests in production
+        run: |
+          cd dbt_project
+          dbt test --target prod
+
+      # Optional: Slim CI — only run modified models
+      # - name: Run modified models only
+      #   run: |
+      #     cd dbt_project
+      #     dbt run --select state:modified+ --defer --state ./prod_manifest --target prod

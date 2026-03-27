@@ -1,0 +1,108 @@
+# pipeline_alert_config.yaml
+# ============================================
+# Sample monitoring & alerting configuration
+# for a DataOps-managed data pipeline
+# ============================================
+
+pipeline:
+  name: customer_analytics
+  owner: data-engineering-team
+  description: "Daily customer analytics pipeline — source to dashboard"
+  sla:
+    freshness: "4 hours"        # Data must be no older than 4 hours
+    completeness: "99.5%"       # At least 99.5% of expected records
+    uptime: "99.9%"             # Pipeline availability target
+
+# ---------- Environment Configuration ----------
+environments:
+  - name: development
+    schedule: "manual"
+    notifications: false
+    monitoring: false
+
+  - name: staging
+    schedule: "0 8 * * *"       # 8 AM daily
+    notifications: true
+    monitoring: true
+
+  - name: production
+    schedule: "0 6 * * *"       # 6 AM daily
+    notifications: true
+    monitoring: true
+
+# ---------- Quality Check Definitions ----------
+quality_checks:
+  # Row count must exceed minimum threshold
+  - type: "row_count"
+    table: "fct_orders"
+    threshold: 1000
+    action: "fail"
+    message: "Order count below minimum — possible ingestion failure"
+
+  # Critical columns must not be null
+  - type: "null_check"
+    table: "dim_customers"
+    columns: ["customer_id", "email"]
+    action: "warn"
+    message: "Null values detected in critical customer columns"
+
+  # Data must be fresh
+  - type: "freshness"
+    table: "fct_orders"
+    timestamp_column: "updated_at"
+    max_age: "4 hours"
+    action: "fail"
+    message: "Orders data is stale — check source ingestion"
+
+  # No duplicate primary keys
+  - type: "uniqueness"
+    table: "dim_customers"
+    column: "customer_id"
+    action: "fail"
+    message: "Duplicate customer IDs detected"
+
+  # Value range validation
+  - type: "range_check"
+    table: "fct_orders"
+    column: "order_total"
+    min_value: 0
+    max_value: 1000000
+    action: "warn"
+    message: "Order total outside expected range"
+
+# ---------- Alert Configuration ----------
+alerts:
+  channels:
+    - type: slack
+      target: "#data-alerts"
+      severity: ["warn", "fail"]
+
+    - type: email
+      target: "data-team@company.com"
+      severity: ["fail"]
+
+    - type: pagerduty
+      target: "data-engineering-oncall"
+      severity: ["fail"]
+
+  escalation:
+    initial_wait: "15 minutes"    # Wait before first alert
+    repeat_interval: "30 minutes" # Re-alert if unresolved
+    escalate_after: "60 minutes"  # Escalate to management
+    escalate_to: "engineering-manager@company.com"
+
+# ---------- Dashboard Metrics ----------
+dashboard:
+  refresh_interval: "5 minutes"
+  panels:
+    - name: "Pipeline Health"
+      metrics: ["run_status", "duration", "error_count"]
+
+    - name: "Data Quality"
+      metrics: ["completeness_pct", "freshness_hours", "uniqueness_pct"]
+
+    - name: "SLA Compliance"
+      metrics: ["sla_met", "sla_missed", "sla_at_risk"]
+
+    - name: "Resource Usage"
+      metrics: ["warehouse_credits", "compute_time", "storage_bytes"]

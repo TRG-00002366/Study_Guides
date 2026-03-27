@@ -1,0 +1,19 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+flowchart LR
+    A["Plan"] --> B["Develop"]
+    B --> C["Test"]
+    C --> D["Release"]
+    D --> E["Deploy"]
+    E --> F["Operate"]
+    F --> G["Monitor"]
+    G --> H["Feedback"]
+    H --> A
+
+    style A fill:#16c79a,stroke:#fff,color:#000
+    style B fill:#1a73e8,stroke:#fff,color:#fff
+    style C fill:#f5a623,stroke:#fff,color:#000
+    style D fill:#9b59b6,stroke:#fff,color:#fff
+    style E fill:#e94560,stroke:#fff,color:#fff
+    style F fill:#0f3460,stroke:#fff,color:#fff
+    style G fill:#00b4d8,stroke:#fff,color:#000
+    style H fill:#2d6a4f,stroke:#fff,color:#fff

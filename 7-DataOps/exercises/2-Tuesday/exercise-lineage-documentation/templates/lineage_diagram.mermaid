@@ -1,0 +1,34 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+flowchart LR
+    %% ============================================
+    %% TODO: Complete this lineage diagram
+    %% Add nodes and connections for ALL layers
+    %% ============================================
+
+    subgraph SRC ["Source Systems"]
+        %% TODO: Add source system nodes
+        %% Hint: Salesforce CRM
+    end
+
+    subgraph RAW ["Raw Layer (Bronze)"]
+        %% TODO: Add raw table nodes
+        %% Hint: RAW.CRM_CUSTOMERS
+    end
+
+    subgraph STG ["Staging Layer (Silver)"]
+        %% TODO: Add staging model nodes
+        %% Hint: stg_customers, stg_orders
+    end
+
+    subgraph MART ["Mart Layer (Gold)"]
+        %% TODO: Add mart model nodes
+        %% Hint: dim_customers, fct_orders, customer_metrics
+    end
+
+    subgraph CONSUME ["Consumption"]
+        %% TODO: Add consumption nodes
+        %% Hint: Dashboard, Report, ML Model
+    end
+
+    %% TODO: Add arrows (-->) between connected nodes
+    %% Example: SALESFORCE --> RAW_CUSTOMERS

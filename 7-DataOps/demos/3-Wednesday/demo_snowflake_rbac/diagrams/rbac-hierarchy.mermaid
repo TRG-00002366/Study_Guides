@@ -1,0 +1,39 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+flowchart TD
+    ACCT["ACCOUNTADMIN"]
+    SEC["SECURITYADMIN"]
+    SYS["SYSADMIN"]
+    
+    ACCT --> SEC
+    ACCT --> SYS
+
+    subgraph Functional ["Functional Roles"]
+        ENG["DATA_ENGINEER"]
+        ANA["DATA_ANALYST"]
+        SCI["DATA_SCIENTIST"]
+        BIZ["BUSINESS_USER"]
+    end
+
+    SYS --> ENG
+    SYS --> ANA
+    SYS --> SCI
+    SYS --> BIZ
+
+    subgraph Domain ["Domain Roles"]
+        FIN["FINANCE_READ"]
+        CUST["CUSTOMER_READ"]
+        PROD["PRODUCT_READ"]
+    end
+
+    ENG --> FIN
+    ENG --> CUST
+    ENG --> PROD
+    ANA --> CUST
+    ANA --> PROD
+    SCI --> ANA
+
+    style ACCT fill:#e94560,stroke:#fff,color:#fff
+    style SEC fill:#f5a623,stroke:#fff,color:#000
+    style SYS fill:#1a73e8,stroke:#fff,color:#fff
+    style Functional fill:#0f3460,stroke:#16c79a,color:#fff
+    style Domain fill:#16213e,stroke:#00b4d8,color:#fff

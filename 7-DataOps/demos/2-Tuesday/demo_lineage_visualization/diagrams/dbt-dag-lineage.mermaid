@@ -1,0 +1,44 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+flowchart TD
+    subgraph Sources ["Sources (YAML)"]
+        SRC_ORD["source: raw.orders"]
+        SRC_CUST["source: raw.customers"]
+        SRC_PROD["source: raw.products"]
+    end
+
+    subgraph Staging ["Staging Models"]
+        STG_ORD["stg_orders<br/>ref('raw', 'orders')"]
+        STG_CUST["stg_customers<br/>ref('raw', 'customers')"]
+        STG_PROD["stg_products<br/>ref('raw', 'products')"]
+    end
+
+    subgraph Marts ["Mart Models"]
+        DIM_CUST["dim_customers<br/>ref('stg_customers')"]
+        DIM_PROD["dim_products<br/>ref('stg_products')"]
+        FCT_ORD["fct_orders<br/>ref('stg_orders')<br/>ref('dim_customers')"]
+        FCT_LI["fct_line_items<br/>ref('stg_orders')<br/>ref('dim_products')"]
+    end
+
+    subgraph Metrics ["Metric Models"]
+        CUST_MET["customer_metrics<br/>ref('fct_orders')<br/>ref('dim_customers')"]
+    end
+
+    SRC_ORD --> STG_ORD
+    SRC_CUST --> STG_CUST
+    SRC_PROD --> STG_PROD
+
+    STG_ORD --> FCT_ORD
+    STG_CUST --> DIM_CUST
+    STG_PROD --> DIM_PROD
+
+    DIM_CUST --> FCT_ORD
+    DIM_PROD --> FCT_LI
+    STG_ORD --> FCT_LI
+
+    FCT_ORD --> CUST_MET
+    DIM_CUST --> CUST_MET
+
+    style Sources fill:#1a1a2e,stroke:#e94560,color:#fff
+    style Staging fill:#0f3460,stroke:#00b4d8,color:#fff
+    style Marts fill:#1a73e8,stroke:#16c79a,color:#fff
+    style Metrics fill:#2d6a4f,stroke:#f5a623,color:#fff

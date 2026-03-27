@@ -1,0 +1,19 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+flowchart TD
+    A["Audit Request Received"] --> B["Data Inventory"]
+    B --> C["Identify PII Locations"]
+    C --> D["Review Access Controls"]
+    D --> E["Check Audit Logs"]
+    E --> F["Verify Retention Policies"]
+    F --> G["Generate Compliance Report"]
+    G --> H{Findings?}
+    H -- No Issues --> I["Report: COMPLIANT"]
+    H -- Issues Found --> J["Remediation Plan"]
+    J --> K["Implement Fixes"]
+    K --> L["Re-Audit"]
+    L --> H
+
+    style A fill:#1a73e8,stroke:#fff,color:#fff
+    style H fill:#f5a623,stroke:#fff,color:#000
+    style I fill:#16c79a,stroke:#fff,color:#000
+    style J fill:#e94560,stroke:#fff,color:#fff

@@ -1,0 +1,73 @@
+# .github/workflows/airflow_ci.yml
+# ============================================
+# CI Pipeline: Validates Airflow DAGs on every PR
+# ============================================
+
+name: Airflow DAG CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'dags/**'
+      - 'tests/**'
+      - '.github/workflows/airflow_ci.yml'
+
+jobs:
+  test-dags:
+    name: Validate Airflow DAGs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install apache-airflow==2.8.0
+          pip install pytest pytest-cov
+          pip install -r requirements.txt
+
+      # Airflow needs a home directory and initialized DB
+      - name: Set Airflow home
+        run: |
+          echo "AIRFLOW_HOME=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+
+      - name: Initialize Airflow database
+        run: |
+          airflow db init
+
+      # Run structural validation tests
+      - name: Run DAG validation tests
+        run: |
+          pytest tests/test_dag_validation.py -v
+
+      # Run unit tests for task functions
+      - name: Run task unit tests
+        run: |
+          pytest tests/test_task_unit.py -v --cov=dags --cov-report=xml
+
+      # Verify DAGs load without errors
+      - name: List loaded DAGs
+        run: |
+          airflow dags list
+
+      # Final check: programmatic import error detection
+      - name: Check DAG for import errors
+        run: |
+          python -c "
+          from airflow.models import DagBag
+          bag = DagBag(dag_folder='./dags', include_examples=False)
+          if bag.import_errors:
+              for dag, error in bag.import_errors.items():
+                  print(f'Error in {dag}: {error}')
+              exit(1)
+          print(f'Successfully loaded {len(bag.dags)} DAGs')
+          "

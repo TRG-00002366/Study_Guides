@@ -1,0 +1,47 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+flowchart LR
+    subgraph SRC ["Source Systems"]
+        OMS["Order Management<br/>System"]
+        CRM["CRM<br/>Database"]
+    end
+
+    subgraph RAW ["Raw Layer (Bronze)"]
+        R_ORD["raw.oms_orders"]
+        R_CUST["raw.crm_customers"]
+    end
+
+    subgraph STG ["Staging Layer (Silver)"]
+        S_ORD["staging.stg_orders"]
+        S_CUST["staging.stg_customers"]
+    end
+
+    subgraph MART ["Mart Layer (Gold)"]
+        F_ORD["marts.fct_orders"]
+        D_CUST["marts.dim_customers"]
+        METRICS["marts.customer_metrics"]
+    end
+
+    subgraph CONSUME ["Consumption"]
+        DASH["Executive Dashboard"]
+        REPORT["Weekly Report"]
+        ML["ML Model: Churn"]
+    end
+
+    OMS --> R_ORD
+    CRM --> R_CUST
+    R_ORD --> S_ORD
+    R_CUST --> S_CUST
+    S_ORD --> F_ORD
+    S_CUST --> D_CUST
+    F_ORD --> METRICS
+    D_CUST --> METRICS
+    D_CUST --> F_ORD
+    METRICS --> DASH
+    METRICS --> REPORT
+    METRICS --> ML
+
+    style SRC fill:#1a1a2e,stroke:#e94560,color:#fff
+    style RAW fill:#16213e,stroke:#f5a623,color:#fff
+    style STG fill:#0f3460,stroke:#00b4d8,color:#fff
+    style MART fill:#1a73e8,stroke:#16c79a,color:#fff
+    style CONSUME fill:#2d1b69,stroke:#f5a623,color:#fff

@@ -1,0 +1,22 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'fontSize': '14px' }}}%%
+sequenceDiagram
+    participant User as User Query
+    participant SF as Snowflake Engine
+    participant POL as Masking Policy
+    participant DATA as Table Data
+
+    User->>SF: SELECT email FROM customers
+    SF->>POL: Check CURRENT_ROLE()
+    
+    alt Role = DATA_ADMIN
+        POL->>SF: Return original value
+        SF->>User: alice@company.com
+    else Role = DATA_ANALYST
+        POL->>SF: Apply mask function
+        SF->>User: ****@company.com
+    else Role = BUSINESS_USER
+        POL->>SF: Full redaction
+        SF->>User: [REDACTED]
+    end
+
+    Note over DATA: Original data is NEVER modified<br/>Masking happens at query time
